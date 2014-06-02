@@ -1,0 +1,9 @@
+{
+  "name": "kurves",
+  "version": "0.1.0",
+  "description": "A local-multiplayer implementation of the curvefever game.",
+  "author": "Pieter Van Molle",
+  "dependencies": {
+    "express": "^4.4.0"
+  }
+}
