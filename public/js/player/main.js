@@ -58,4 +58,12 @@
 		subtitle.innerHTML = 'Player: ' + playerId;
 	});
 
+	// Device orientation stuff
+	
+	if (window.DeviceOrientationEvent) {
+		window.addEventListener('deviceorientation', function(evt) {
+			document.getElementById('deviceorientation').innerHTML = evt.beta;
+		});
+	}
+
 })(window, document, io, null);
