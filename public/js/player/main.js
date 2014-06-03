@@ -4,6 +4,8 @@
 
 	// Fields
 
+	var inputGame = document.getElementById('textFieldGame');
+	var buttonGame = document.getElementById('submitButtonGame');
 	var title = document.getElementById('game');
 	var subtitle = document.getElementById('player');
 	var input = document.getElementById('textField');
@@ -25,17 +27,28 @@
 			return;
 		}
 
-		if (!game) {
+		if (!gameId || !playerId) {
 			return;
 		}
 
-		socket.emit('new message', { message: message });
+		socket.emit('new message', {
+			message: message
+		});
 		input.value = '';
 	});
 
-	socket.on('connect', function() {
-		socket.emit('new player');
-	});
+	buttonGame.addEventListener('click', function(evt) {
+		evt.preventDefault();
+
+		var game;
+		if (!(game = inputGame.value.trim())) {
+			return;
+		}
+
+		socket.emit('new player', {
+			game: game
+		});
+	})
 
 	socket.on('new player', function(data) {
 		gameId = data.game;

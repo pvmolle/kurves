@@ -46,7 +46,7 @@ var Player = function(id) {
 	this.id = id;
 };
 
-var games = [];
+var gameMap = {};
 var playerGameMap = {};
 
 
@@ -55,7 +55,7 @@ io.on('connection', function(socket) {
 	socket.on('new game', function() {
 		var game = new Game(socket.id);
 
-		games.push(game);
+		gameMap[game.id] = game;
 		socket.join(game.id);
 
 		socket.emit('new game', {
@@ -63,13 +63,17 @@ io.on('connection', function(socket) {
 		});
 	});
 
-	socket.on('new player', function() {
-		if (games.length < 1) {
+	socket.on('new player', function(data) {
+		if (Object.keys(gameMap).length < 1) {
 			return;
 		}
 
 		var player = new Player(socket.id);
-		var game = games[0];
+		var game = gameMap[data.game];
+		if (!game) {
+			return;
+		}
+
 		game.players.push(player);
 		socket.join(game.id);
 
