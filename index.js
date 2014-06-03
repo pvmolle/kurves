@@ -28,15 +28,67 @@ app.set('view engine', 'jade');
 // Routes
 
 app.get('/', function(req, res) {
-	res.render('home');
+	res.render('game');
+});
+
+app.get('/player', function(req, res) {
+	res.render('player');
 });
 
 // Moar websockets
 
+var Game = function(id) {
+	this.id = id;
+	this.players = [];
+};
+
+var Player = function(id) {
+	this.id = id;
+};
+
+var games = [];
+var playerGameMap = {};
+
+
 io.on('connection', function(socket) {
 
+	socket.on('new game', function() {
+		var game = new Game(socket.id);
+
+		games.push(game);
+		socket.join(game.id);
+
+		socket.emit('new game', {
+			game: game.id
+		});
+	});
+
+	socket.on('new player', function() {
+		if (games.length < 1) {
+			return;
+		}
+
+		var player = new Player(socket.id);
+		var game = games[0];
+		game.players.push(player);
+		socket.join(game.id);
+
+		playerGameMap[player.id] = game.id;
+		
+		socket.emit('new player', {
+			game: game.id,
+			player: player.id
+		});
+	});
+
 	socket.on('new message', function(data) {
-		io.sockets.emit('new message', {
+		var game;
+
+		if (!(game = playerGameMap[socket.id])) {
+			return;
+		}
+
+		io.sockets.in(game).emit('new message', {
 			message: data.message
 		});
 	});

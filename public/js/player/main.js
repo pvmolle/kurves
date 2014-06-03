@@ -4,9 +4,12 @@
 
 	// Fields
 
-	var list = document.getElementById('chat');
+	var title = document.getElementById('game');
+	var subtitle = document.getElementById('player');
 	var input = document.getElementById('textField');
 	var button = document.getElementById('submitButton');
+	var gameId;
+	var playerId;
 
 	// Socket
 
@@ -22,14 +25,24 @@
 			return;
 		}
 
+		if (!game) {
+			return;
+		}
+
 		socket.emit('new message', { message: message });
+		input.value = '';
 	});
 
-	socket.on('new message', function(data) {
-		var message = document.createElement('li');
-		message.innerHTML = data.message;
-		list.appendChild(message);
-		input.value = '';
+	socket.on('connect', function() {
+		socket.emit('new player');
+	});
+
+	socket.on('new player', function(data) {
+		gameId = data.game;
+		playerId = data.player;
+
+		title.innerHTML = 'Game: ' + gameId;
+		subtitle.innerHTML = 'Player: ' + playerId;
 	});
 
 })(window, document, io, null);

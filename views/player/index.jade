@@ -4,11 +4,13 @@ head
 body
 	h1 Make it rain!
 
-	ul#chat
+	h2#game
+
+	h3#player
 
 	form
 		input#textField(type="text")
 		input#submitButton(type="submit", value="Chat!")
 
 	script(src="js/bower_components/socket.io-client/socket.io.js")
-	script(src="js/main.js")
+	script(src="js/player/main.js")
