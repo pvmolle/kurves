@@ -1,0 +1,7 @@
+{
+  "name": "kurves",
+  "version": "0.1.0",
+  "dependencies": {
+    "socket.io-client": "~1.0.4"
+  }
+}

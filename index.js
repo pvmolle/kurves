@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * Module dependencies
  */
@@ -13,6 +15,12 @@ var pub = __dirname + '/public';
 var app = express();
 app.use(express.static(pub));
 
+var server = app.listen(3000);
+
+// Websockets
+
+var io = require('socket.io').listen(server);
+
 // Set default template engine to "jade"
 
 app.set('view engine', 'jade');
@@ -23,4 +31,14 @@ app.get('/', function(req, res) {
 	res.render('home');
 });
 
-app.listen(3000);
+// Moar websockets
+
+io.on('connection', function(socket) {
+
+	socket.on('new message', function(data) {
+		io.sockets.emit('new message', {
+			message: data.message
+		});
+	});
+
+});
