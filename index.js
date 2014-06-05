@@ -106,7 +106,7 @@ io.on('connection', function(socket) {
 
 		game.socket.emit('player move', {
 			playerId: data.playerId,
-			angle: data.angle
+			playerDirection: data.playerDirection
 		});
 	});
 

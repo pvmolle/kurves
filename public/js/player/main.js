@@ -13,13 +13,17 @@
 	var gameUrl = (function() {
 		return window.location.pathname.substr(1);
 	})();
+	var direction;
+	var orientation;
 
 	// Socket
 
 	var socket = io();
 
-	// Listeners
+	// Device orientation
+	orientation = window.orientation;
 
+	// Listeners
 	
 	socket.on('connect', function() {
 		socket.emit('new player', {
@@ -39,12 +43,31 @@
 	
 	if (window.DeviceOrientationEvent) {
 		window.addEventListener('deviceorientation', function(evt) {
-			document.getElementById('deviceorientation').innerHTML = evt.beta;
+
+			var angle = Math.floor(evt.beta);
+
+			if (orientation < 0) {
+				angle *= -1;
+			}
+
+			if (angle < -20) {
+				direction = 'left';
+			} else if (angle > 20) {
+				direction = 'right';
+			} else {
+				direction = null;
+			}
+
+			document.getElementById('deviceorientation').innerHTML = direction;
 			socket.emit('player move', {
 				gameUrl: gameUrl,
 				playerId: playerId,
-				angle: evt.beta
+				playerDirection: direction
 			});
+		});
+
+		window.addEventListener('orientationchange', function(evt) {
+			orientation = window.orientation;
 		});
 	}
 
