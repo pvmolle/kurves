@@ -28,19 +28,17 @@ app.set('view engine', 'jade');
 // Logic
 
 var Game = function(id) {
-	this.players = [];
-	this.url = (function() {
-		return Math.random().toString(36).substr(2, 5);
-	})();
+	this.players = {};
+	this.url = Math.random().toString(36).substr(2, 5);
+	this.socket = null;
 };
 
-var Player = function(id) {
-	this.id = id;
+var Player = function() {
+	this.socket = null;
 };
 
 var gameMap = {};
 var urlGameMap = {};
-var playerGameMap = {};
 
 // Routes
 
@@ -78,33 +76,86 @@ io.on('connection', function(socket) {
 		}
 
 		var player = new Player(socket.id);
+		player.socket = socket;
 		var game = urlGameMap[data.gameUrl];
 		if (!game) {
 			return;
 		}
 
-		game.players.push(player);
+		game.players[player.id] = player;
 		socket.join(game.url);
 
 		game.socket.emit('new player', {
-			player: player
-		});
-
-		playerGameMap[player.id] = game.id;
-		
-		socket.emit('new player', {
-			gameUrl: game.url,
 			playerId: player.id
 		});
 	});
 
-	socket.on('player move', function(data) {
+	socket.on('player confirmed', function(data) {
 		var game = urlGameMap[data.gameUrl];
 		if (!game) {
 			return;
 		}
 
-		game.socket.emit('player move', {
+		var player = game.players[data.playerId];
+		if (!player) {
+			return;
+		}
+
+		player.socket.emit('player confirmed', {
+			gameUrl: game.url,
+			playerId: player.id,
+			playerColor: data.playerColor
+		});
+	});
+
+	socket.on('name player', function(data) {
+		var game = urlGameMap[data.gameUrl];
+		if (!game) {
+			return;
+		}
+
+		game.socket.emit('name player', {
+			playerId: data.playerId,
+			playerName: data.playerName
+		});
+	});
+
+	socket.on('ready player', function(data) {
+		var game = urlGameMap[data.gameUrl];
+		if (!game) {
+			return;
+		}
+
+		game.socket.emit('ready player', {
+			playerId: data.playerId
+		});
+	});
+
+	socket.on('start ready', function(data) {
+		var game = urlGameMap[data.gameUrl];
+		if (!game) {
+			return;
+		}
+
+		socket.broadcast.to(game.url).emit('start ready');
+	});
+
+	socket.on('start game', function(data) {
+		var game = urlGameMap[data.gameUrl];
+		if (!game) {
+			return;
+		}
+
+		socket.broadcast.to(game.url).emit('start game');
+	});
+
+	socket.on('move player', function(data) {
+		var game = urlGameMap[data.gameUrl];
+		if (!game) {
+			return;
+		}
+
+		game.socket.emit('move player', {
 			playerId: data.playerId,
 			playerDirection: data.playerDirection
 		});

@@ -2,41 +2,74 @@
 
 	"use strict";
 
+	function Player(id, color) {
+		this.id = id;
+		this.color = color;
+		this.name = null;
+		this.direction = null;
+		this.orientation = window.orientation;
+		this.ready = false;
+	}
+
 	// Fields
 
-	var inputGame = document.getElementById('textFieldGame');
-	var buttonGame = document.getElementById('submitButtonGame');
-	var title = document.getElementById('game');
-	var subtitle = document.getElementById('player');
-	var gameUrl;
-	var playerId;
-	var gameUrl = (function() {
-		return window.location.pathname.substr(1);
-	})();
-	var direction;
-	var orientation;
+	var gameUrl = window.location.pathname.substr(1);
+	var player;
 
 	// Socket
 
 	var socket = io();
 
-	// Device orientation
-	orientation = window.orientation;
-
 	// Listeners
-	
+
+	document.getElementById('formPlayer').addEventListener('submit', function(evt) {
+		evt.preventDefault();
+
+		var input = document.getElementById('playerName');
+
+		if (!/^[A-Za-z]+$/.test(input.value)) {
+			return;
+		}
+
+		player.name = input.value;
+
+		socket.emit('name player', {
+			gameUrl: gameUrl,
+			playerId: player.id,
+			playerName: player.name
+		});
+	});
+
+	document.getElementById('readyButton').addEventListener('click', function(evt) {
+		evt.preventDefault();
+
+		socket.emit('ready player', {
+			gameUrl: gameUrl,
+			playerId: player.id
+		});
+	});
+
+	// Sockets
+
 	socket.on('connect', function() {
 		socket.emit('new player', {
 			gameUrl: gameUrl
 		});
 	});
 
-	socket.on('new player', function(data) {
-		gameUrl = data.gameUrl;
-		playerId = data.playerId;
+	socket.on('player confirmed', function(data) {
+		player = new Player(data.playerId, data.playerColor);
+		var playerText = document.getElementById('player');
+		playerText.style.color = player.color;
+		playerText.innerHTML = 'What\'s your name?';
+	});
 
-		title.innerHTML = 'Game: ' + gameUrl;
-		subtitle.innerHTML = 'Player: ' + playerId;
+	socket.on('start ready', function() {
+		alert('ready?');
+	});
+
+	socket.on('start game', function() {
+		alert('start!');
 	});
 
 	// Device orientation stuff
@@ -45,6 +78,7 @@
 		window.addEventListener('deviceorientation', function(evt) {
 
 			var angle = Math.floor(evt.beta);
+			var direction = null;
 
 			if (orientation < 0) {
 				angle *= -1;
@@ -52,17 +86,24 @@
 
 			if (angle < -20) {
 				direction = 'left';
-			} else if (angle > 20) {
+			}
+			
+			if (angle > 20) {
 				direction = 'right';
-			} else {
-				direction = null;
 			}
 
-			document.getElementById('deviceorientation').innerHTML = direction;
-			socket.emit('player move', {
+			if (direction === player.direction) {
+				return;
+			}
+
+			player.direction = direction;
+
+			document.getElementById('deviceorientation').innerHTML = player.direction;
+			
+			socket.emit('move player', {
 				gameUrl: gameUrl,
-				playerId: playerId,
-				playerDirection: direction
+				playerId: player.id,
+				playerDirection: player.direction
 			});
 		});
 

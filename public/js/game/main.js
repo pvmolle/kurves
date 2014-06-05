@@ -14,10 +14,35 @@
 		this.color = '#000000';
 		this.playerColors = ['#ff009e', '#ff2600', '#ff9300', '#87ff00', '#00ff61', '#00fdff', '#0043ff', '#bc00ff'];
 		this.activeColors = ['#ffffff'];
+		this.state = 'lobby';
 	}
 
-	function Player(options, game) {
-		this.id = options.id;
+	Game.prototype.checkAllPlayersReady = function() {
+		var self = this;
+
+		var allPlayersReady = true;
+
+		var playersList = Object.keys(this.players);
+		playersList.forEach(function(id) {
+			var p = self.players[id];
+
+			allPlayersReady = allPlayersReady && p.ready;
+		});
+
+		if (allPlayersReady) {
+
+			// Logic to show button
+		
+		};
+	};
+
+	Game.prototype.start = function() {
+		this.state = 'playing';
+	};
+
+	function Player(id, game) {
+		this.id = id;
+		this.name = null;
 		this.direction = null;
 		this.x = Math.floor(Math.random() * (game.width - 60)) + 30;
 		this.y = Math.floor(Math.random() * (game.height - 60)) + 30;
@@ -31,6 +56,7 @@
 			game.activeColors.push(color);
 			return color;
 		})();
+		this.ready = false;
 	}
 
 	function matchColor(xy, color) {
@@ -66,8 +92,6 @@
 		return Math.sqrt(xs + ys);
 	}
 
-	var title = document.getElementById('title');
-	var list = document.getElementById('list');
 	var game;
 	var socket = io();
 
@@ -77,76 +101,126 @@
 	var canvas = document.getElementById('the-canvas');
 	var ctx = canvas.getContext('2d');
 
+	// Listeners
+	
+	document.getElementById('startButton').addEventListener('click', function() {
+		socket.emit('start ready', {
+			gameUrl: game.url
+		});
+
+		setTimeout(function() {
+			game.start();
+
+			socket.emit('start game', {
+				gameUrl: game.url
+			});
+		}, 3000);
+	});
+
+	// Sockets
+
 	socket.on('connect', function() {
 		socket.emit('new game');
 	})
 
 	socket.on('new game', function(data) {
 		game = new Game(data.url, 500, 500, 'the-canvas');
-		title.innerHTML = 'Game: ' + game.url;
+		document.getElementById('title').innerHTML = 'Game: ' + game.url;
 		ctx.fillRect(0, 0, game.width, game.height, game.color);
-
-		// Temporarily add some players
-		
-		game.players['3'] = new Player({ id: 3 }, game);
-		game.players['4'] = new Player({ id: 4 }, game);
-		game.players['5'] = new Player({ id: 5 }, game);
-		game.players['6'] = new Player({ id: 6 }, game);
 	});
 
 	socket.on('new player', function(data) {
-		game.players[data.player.id] = new Player(data.player, game);
+		var player = new Player(data.playerId, game);
+		game.players[player.id] = player;
+
+		socket.emit('player confirmed', {
+			gameUrl: game.url,
+			playerId: player.id,
+			playerColor: player.color
+		});
 	});
 
-	socket.on('player move', function(data) {
+	socket.on('name player', function(data) {
+		var player = game.players[data.playerId];
+		if (!player) {
+			return;
+		}
+
+		player.name = data.playerName;
+		
+		var listItem = document.createElement('li');
+		listItem.style.color = player.color;
+		listItem.innerHTML = player.name + ' - ' + (player.ready ? 'Ready' : 'Standby');
+
+		document.getElementById('list').appendChild(listItem);
+	});
+
+	socket.on('ready player', function(data) {
+		var player = game.players[data.playerId];
+		if (!player) {
+			return;
+		}
+
+		player.ready = true;
+
+		var listItem = document.createElement('li');
+		listItem.style.color = player.color;
+		listItem.innerHTML = player.name + ' - ' + (player.ready ? 'Ready' : 'Standby');
+
+		document.getElementById('list').appendChild(listItem);
+
+		game.checkAllPlayersReady();
+	});
+
+	socket.on('move player', function(data) {
 		game.players[data.playerId].direction = data.playerDirection;
 	});
 
 	// Game loop
 	
-	requestAnimationFrame(function loop() {
-		requestAnimationFrame(loop);
-		if (!game) {
-			return;
-		}
+	// requestAnimationFrame(function loop() {
+	// 	requestAnimationFrame(loop);
+	// 	if (!game) {
+	// 		return;
+	// 	}
 
-		var playersList = Object.keys(game.players);
-		playersList.forEach(function(id) {
-			var p = game.players[id];
+	// 	var playersList = Object.keys(game.players);
+	// 	playersList.forEach(function(id) {
+	// 		var p = game.players[id];
 
-			if (!p.alive) {
-				return;
-			}
+	// 		if (!p.alive) {
+	// 			return;
+	// 		}
 			
-			// Player position
+	// 		// Player position
 			
-			if ('left' === p.direction) {
-				p.angle -= Math.PI / 60;
-			} else if ('right' === p.direction) {
-				p.angle += Math.PI / 60;
-			}
+	// 		if ('left' === p.direction) {
+	// 			p.angle -= Math.PI / 60;
+	// 		} else if ('right' === p.direction) {
+	// 			p.angle += Math.PI / 60;
+	// 		}
 			
-			p.x += Math.cos(p.angle);
-			p.y += Math.sin(p.angle);
+	// 		p.x += Math.cos(p.angle);
+	// 		p.y += Math.sin(p.angle);
 
-			var xToMeasure = p.x + (2 * Math.cos(p.angle));
-			var yToMeasure = p.y + (2 * Math.sin(p.angle));
+	// 		var xToMeasure = p.x + (2 * Math.cos(p.angle));
+	// 		var yToMeasure = p.y + (2 * Math.sin(p.angle));
 
-			var xy = [xToMeasure, yToMeasure];
+	// 		var xy = [xToMeasure, yToMeasure];
 
-			if (matchColors(xy, game.activeColors)) {
-				p.alive = false;
-				return;
-			}
+	// 		if (matchColors(xy, game.activeColors)) {
+	// 			p.alive = false;
+	// 			return;
+	// 		}
 
-			// Draw player
+	// 		// Draw player
 			
-			ctx.fillStyle = p.color;
+	// 		ctx.fillStyle = p.color;
 
-			ctx.beginPath();
-			ctx.arc(p.x, p.y, 2, 0, 2 * Math.PI, true);
-			ctx.fill();
-		});
-	});
+	// 		ctx.beginPath();
+	// 		ctx.arc(p.x, p.y, 2, 0, 2 * Math.PI, true);
+	// 		ctx.fill();
+	// 	});
+	// });
 
 //})(window, document, io, null);
