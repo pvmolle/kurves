@@ -25,21 +25,13 @@ var io = require('socket.io').listen(server);
 
 app.set('view engine', 'jade');
 
-// Routes
-
-app.get('/', function(req, res) {
-	res.render('game');
-});
-
-app.get('/player', function(req, res) {
-	res.render('player');
-});
-
-// Moar websockets
+// Logic
 
 var Game = function(id) {
-	this.id = id;
 	this.players = [];
+	this.url = (function() {
+		return Math.random().toString(36).substr(2, 5);
+	})();
 };
 
 var Player = function(id) {
@@ -47,53 +39,74 @@ var Player = function(id) {
 };
 
 var gameMap = {};
+var urlGameMap = {};
 var playerGameMap = {};
 
+// Routes
+
+app.get('/', function(req, res) {
+	res.render('game');
+});
+
+app.get('/:game', function(req, res) {
+	if (!urlGameMap[req.params.game]) {
+		return res.send(404);
+	}
+
+	res.render('player');
+});
+
+// Moar websockets
 
 io.on('connection', function(socket) {
 
 	socket.on('new game', function() {
-		var game = new Game(socket.id);
+		var game = new Game();
 
-		gameMap[game.id] = game;
-		socket.join(game.id);
+		urlGameMap[game.url] = game;
+		socket.join(game.url);
+		game.socket = socket;
 
 		socket.emit('new game', {
-			game: game.id
+			url: game.url
 		});
 	});
 
 	socket.on('new player', function(data) {
-		if (Object.keys(gameMap).length < 1) {
+		if (Object.keys(urlGameMap).length < 1) {
 			return;
 		}
 
 		var player = new Player(socket.id);
-		var game = gameMap[data.game];
+		var game = urlGameMap[data.gameUrl];
 		if (!game) {
 			return;
 		}
 
 		game.players.push(player);
-		socket.join(game.id);
+		socket.join(game.url);
+
+		game.socket.emit('new player', {
+			player: player
+		});
 
 		playerGameMap[player.id] = game.id;
 		
 		socket.emit('new player', {
-			game: game.id,
-			player: player.id
+			gameUrl: game.url,
+			playerId: player.id
 		});
 	});
 
-	socket.on('new message', function(data) {
-		var game;
-
-		if (!(game = playerGameMap[socket.id])) {
+	socket.on('player move', function(data) {
+		var game = urlGameMap[data.gameUrl];
+		if (!game) {
 			return;
 		}
 
-		io.sockets.in(game).emit('new message', {
-			message: data.message
+		game.socket.emit('player move', {
+			playerId: data.playerId,
+			angle: data.angle
 		});
 	});
 
