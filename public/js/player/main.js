@@ -2,6 +2,11 @@
 
 	"use strict";
 
+	function Game(url) {
+		this.url = window.location.pathname.substr(1);
+		this.state = 'lobby';
+	}
+
 	function Player(id, color) {
 		this.id = id;
 		this.color = color;
@@ -13,7 +18,7 @@
 
 	// Fields
 
-	var gameUrl = window.location.pathname.substr(1);
+	var game;
 	var player;
 
 	// Socket
@@ -34,7 +39,7 @@
 		player.name = input.value;
 
 		socket.emit('name player', {
-			gameUrl: gameUrl,
+			gameUrl: game.url,
 			playerId: player.id,
 			playerName: player.name
 		});
@@ -44,7 +49,7 @@
 		evt.preventDefault();
 
 		socket.emit('ready player', {
-			gameUrl: gameUrl,
+			gameUrl: game.url,
 			playerId: player.id
 		});
 	});
@@ -53,7 +58,7 @@
 
 	socket.on('connect', function() {
 		socket.emit('new player', {
-			gameUrl: gameUrl
+			gameUrl: game.url
 		});
 	});
 
@@ -76,6 +81,9 @@
 	
 	if (window.DeviceOrientationEvent) {
 		window.addEventListener('deviceorientation', function(evt) {
+			if (!game || !game.state = 'playing') {
+				return;
+			}
 
 			var angle = Math.floor(evt.beta);
 			var direction = null;
@@ -101,7 +109,7 @@
 			document.getElementById('deviceorientation').innerHTML = player.direction;
 			
 			socket.emit('move player', {
-				gameUrl: gameUrl,
+				gameUrl: game.url,
 				playerId: player.id,
 				playerDirection: player.direction
 			});

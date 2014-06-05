@@ -35,9 +35,53 @@
 		
 		};
 	};
+	
+	Game.prototype.loop = function() {
+		var self = this;
+		requestAnimationFrame(this.loop.bind(this));
+
+		var playersList = Object.keys(this.players);
+		playersList.forEach(function(id) {
+			var p = self.players[id];
+
+			if (!p.alive) {
+				return;
+			}
+			
+			// Player position
+			
+			if ('left' === p.direction) {
+				p.angle -= Math.PI / 60;
+			} else if ('right' === p.direction) {
+				p.angle += Math.PI / 60;
+			}
+			
+			p.x += Math.cos(p.angle);
+			p.y += Math.sin(p.angle);
+
+			var xToMeasure = p.x + (2 * Math.cos(p.angle));
+			var yToMeasure = p.y + (2 * Math.sin(p.angle));
+
+			var xy = [xToMeasure, yToMeasure];
+
+			if (matchColors(xy, self.activeColors)) {
+				p.alive = false;
+				return;
+			}
+
+			// Draw player
+			
+			ctx.fillStyle = p.color;
+
+			ctx.beginPath();
+			ctx.arc(p.x, p.y, 2, 0, 2 * Math.PI, true);
+			ctx.fill();
+		});
+	};
 
 	Game.prototype.start = function() {
 		this.state = 'playing';
+		this.loop();
 	};
 
 	function Player(id, game) {
@@ -175,52 +219,5 @@
 	socket.on('move player', function(data) {
 		game.players[data.playerId].direction = data.playerDirection;
 	});
-
-	// Game loop
-	
-	// requestAnimationFrame(function loop() {
-	// 	requestAnimationFrame(loop);
-	// 	if (!game) {
-	// 		return;
-	// 	}
-
-	// 	var playersList = Object.keys(game.players);
-	// 	playersList.forEach(function(id) {
-	// 		var p = game.players[id];
-
-	// 		if (!p.alive) {
-	// 			return;
-	// 		}
-			
-	// 		// Player position
-			
-	// 		if ('left' === p.direction) {
-	// 			p.angle -= Math.PI / 60;
-	// 		} else if ('right' === p.direction) {
-	// 			p.angle += Math.PI / 60;
-	// 		}
-			
-	// 		p.x += Math.cos(p.angle);
-	// 		p.y += Math.sin(p.angle);
-
-	// 		var xToMeasure = p.x + (2 * Math.cos(p.angle));
-	// 		var yToMeasure = p.y + (2 * Math.sin(p.angle));
-
-	// 		var xy = [xToMeasure, yToMeasure];
-
-	// 		if (matchColors(xy, game.activeColors)) {
-	// 			p.alive = false;
-	// 			return;
-	// 		}
-
-	// 		// Draw player
-			
-	// 		ctx.fillStyle = p.color;
-
-	// 		ctx.beginPath();
-	// 		ctx.arc(p.x, p.y, 2, 0, 2 * Math.PI, true);
-	// 		ctx.fill();
-	// 	});
-	// });
 
 //})(window, document, io, null);
