@@ -1,7 +1,5 @@
-<h1>{{ game.url }}</h1>
+<button ng-click="restartGame()"></button>
 <ul>
-    <li ng-repeat="(id, player) in game.players">{{player.name}}</li>
+    <li ng-repeat="(id, player) in game.players">{{ player.name }} <span>{{ player.alive ? 'Alive' : 'Dead' }}</span></li>
 </ul>
-<button ng-click="startGame()" ng-disabled="!game.allPlayersReady()">Start game!</button>
-<br/>
-<canvas id="the-canvas" width="500" height="500" style="border: 1px solid black;"></canvas>
+<canvas id="the-canvas"></canvas>

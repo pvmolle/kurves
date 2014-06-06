@@ -1,22 +1,55 @@
 "use strict";
 
 angular.module('kurves')
-    .controller('GameCtrl', function($scope, socket, Game, Player) {
+    .controller('GameCtrl', function($scope, socket, Game, Player, $state, $timeout) {
+        // Catch for incorrect routing
+
+        if (!$scope.game) {
+            $state.go('^.lobby');
+        }
+
         // Listeners
 
         $scope.startGame = function() {
+            $state.go('^.play');
+        };
+
+        $scope.restartGame = function() {
+            $scope.game.reset();
+
+            start();
+        }
+
+        function start() {
+            $timeout(function() {
+                $scope.game.lookupCanvas('the-canvas');
+            }, 0);
+
             socket.emit('start ready', {
                 gameUrl: $scope.game.url
             });
 
-            setTimeout(function() {
+            $timeout(function() {
                 $scope.game.start();
 
                 socket.emit('start game', {
                     gameUrl: $scope.game.url
                 });
             }, 3000);
-        };
+        }
+
+        $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+            if ('game.play' === toState.name && 'game.lobby' === fromState.name) {
+                start();
+            }
+        });
+
+        $scope.$on('finished', function() {
+            socket.emit('end game', {
+                gameUrl: $scope.game.url,
+                gameWinnerId: $scope.game.winner.id
+            });
+        });
 
         // Sockets
 
@@ -25,8 +58,7 @@ angular.module('kurves')
         })
 
         socket.on('new game', function(data) {
-            $scope.game = new Game(data.url, 500, 500, 'the-canvas');
-            $scope.game.ctx.fillRect(0, 0, $scope.game.width, $scope.game.height, $scope.game.color);
+            $scope.game = new Game($scope, data.url, 500, 500);
 
             $scope.$apply();
         });

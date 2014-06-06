@@ -164,4 +164,15 @@ io.on('connection', function(socket) {
 		});
 	});
 
+    socket.on('end game', function(data) {
+        var game = urlGameMap[data.gameUrl];
+        if (!game) {
+            return;
+        }
+
+        socket.broadcast.to(game.url).emit('end game', {
+            gameWinnerId: data.gameWinnerId
+        });
+    });
+
 });
