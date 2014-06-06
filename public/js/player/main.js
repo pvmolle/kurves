@@ -2,7 +2,7 @@
 
 	"use strict";
 
-	function Game(url) {
+	function Game() {
 		this.url = window.location.pathname.substr(1);
 		this.state = 'lobby';
 	}
@@ -18,7 +18,7 @@
 
 	// Fields
 
-	var game;
+	var game = new Game();
 	var player;
 
 	// Socket
@@ -81,7 +81,7 @@
 	
 	if (window.DeviceOrientationEvent) {
 		window.addEventListener('deviceorientation', function(evt) {
-			if (!game || !game.state = 'playing') {
+			if (!game || 'playing' !== game.state) {
 				return;
 			}
 
