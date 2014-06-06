@@ -33,7 +33,8 @@ var Game = function(id) {
 	this.socket = null;
 };
 
-var Player = function() {
+var Player = function(id) {
+    this.id = id;
 	this.socket = null;
 };
 
@@ -86,7 +87,9 @@ io.on('connection', function(socket) {
 		socket.join(game.url);
 
 		game.socket.emit('new player', {
-			playerId: player.id
+			playerId: player.id,
+            foo: 'bar',
+            baz: 'steveo'
 		});
 	});
 

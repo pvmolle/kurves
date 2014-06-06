@@ -1,18 +1,19 @@
 doctype html
 
 head
-body
+body(ng-app="kurves")
+
 	h1 Here comes the rain!
 
-	h2#title
-
-	ul#list
-
-	button#startButton Start Game!
-
-	br
-
-	canvas#the-canvas(width="500", height="500", style="border: 1px solid black;")
+	ui-view
 
 	script(src="js/bower_components/socket.io-client/socket.io.js")
-	script(src="js/game/main.js")
+	//script(src="js/game/main.js")
+	script(src="js/bower_components/angular/angular.js")
+	script(src="js/bower_components/angular-ui-router/release/angular-ui-router.js")
+	script(src="js/game/app.js")
+	script(src="js/game/controllers/game.js")
+	script(src="js/game/services/game.js")
+	script(src="js/game/services/player.js")
+	script(src="js/game/services/socket.js")
+	script(src="js/game/services/utils.js")
