@@ -13,9 +13,10 @@ var pub = __dirname + '/public';
 // Setup middleware
 
 var app = express();
+app.set('port', process.env.PORT || 3000);
 app.use(express.static(pub));
 
-var server = app.listen(3000);
+var server = app.listen(app.get('port'));
 
 // Websockets
 
