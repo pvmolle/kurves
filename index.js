@@ -49,9 +49,15 @@ app.get('/', function(req, res) {
 });
 
 app.get('/:game', function(req, res) {
+    var game = urlGameMap[req.params.game];
+
 	if (!urlGameMap[req.params.game]) {
-		return res.send(404);
+		return res.send('Game not found!');
 	}
+
+    if (game.playing) {
+        return res.send('Game already started!');
+    }
 
 	res.render('player');
 });
@@ -96,6 +102,14 @@ io.on('connection', function(socket) {
             foo: 'bar',
             baz: 'steveo'
 		});
+
+        socket.on('disconnect', function() {
+            console.log('player left');
+            game.socket.emit('delete player', {
+                playerId: player.id
+            });
+            delete game.players[player.id];
+        });
 	});
 
 	socket.on('player confirmed', function(data) {
@@ -144,6 +158,8 @@ io.on('connection', function(socket) {
 		if (!game) {
 			return;
 		}
+
+        game.playing = true;
 
 		socket.broadcast.to(game.url).emit('start ready');
 	});

@@ -113,4 +113,14 @@ angular.module('kurves')
 
             $scope.$apply();
         });
+
+        socket.on('delete player', function(data) {
+            var player = $scope.game.players[data.playerId];
+
+                $scope.game.playerColors.push(player.color);
+
+            delete $scope.game.players[data.playerId];
+
+            $scope.$apply();
+        });
     });
