@@ -55,6 +55,11 @@ app.get('/:game', function(req, res) {
 		return res.send('Game not found!');
 	}
 
+    console.log('no. players:' +  Object.keys(game.players).length);
+    if (Object.keys(game.players).length >= 6) {
+        return res.send('Game is full!');
+    }
+
     if (game.playing) {
         return res.send('Game already started!');
     }
