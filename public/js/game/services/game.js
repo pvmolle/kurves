@@ -21,8 +21,6 @@ angular.module('kurves')
         Game.prototype.reset = function() {
             var self = this;
 
-            this.playerColors = ['#ff009e', '#ff2600', '#ff9300', '#87ff00', '#00ff61', '#00fdff', '#0043ff', '#bc00ff'];
-            this.activeColors = ['#ffffff'];
             this.state = 'playing';
             this.rafId =  null;
             this.winner = null;
