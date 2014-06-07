@@ -23,6 +23,7 @@ angular.module('kurves')
         function start() {
             $timeout(function() {
                 $scope.game.lookupCanvas('the-canvas');
+                $scope.game.placePlayers();
             }, 0);
 
             socket.emit('start ready', {

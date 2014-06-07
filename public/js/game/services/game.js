@@ -118,6 +118,23 @@ angular.module('kurves')
             self.$scope.$apply();
         };
 
+        Game.prototype.placePlayers = function() {
+            var self = this;
+
+            var playersList = Object.keys(this.players);
+            playersList.forEach(function(id) {
+                var p = self.players[id];
+
+                // Draw player
+
+                self.ctx.fillStyle = p.color;
+
+                self.ctx.beginPath();
+                self.ctx.arc(p.x, p.y, 2, 0, 2 * Math.PI, true);
+                self.ctx.fill();
+            });
+        };
+
         Game.prototype.start = function() {
             this.state = 'playing';
             this.loop();
