@@ -17,9 +17,9 @@ function Player(id, color) {
 var visibleMap = {
     'lobby-ask-name': '.client__form',
     'lobby-ask-ready': '.client__button',
-    'lobby-ready': '.client__ready',
+    'lobby-ready': '.client__state',
     'playing': '.client__orientation',
-    'done': '.client__done'
+    'done': '.client__state'
 };
 
 function setVisibleState() {
@@ -50,7 +50,7 @@ var socket = io('/', { secure: true });
 // Listeners
 
 var input = document.getElementById('playerName');
-var playerState = document.querySelector('.client__ready span');
+var playerState = document.querySelector('.client__state span');
 
 input.addEventListener('change', function() {
     var value = input.value.trim();
@@ -113,7 +113,9 @@ socket.on('player confirmed', function(data) {
 });
 
 socket.on('start ready', function() {
+    game.state = 'lobby-ready';
     playerState.innerHTML = 'Ready?';
+    setVisibleState();
 });
 
 socket.on('start game', function() {
@@ -125,9 +127,9 @@ socket.on('end game', function(data) {
     game.state = 'done';
 
     if (player.id === data.gameWinnerId) {
-        // Display 'Winner!'
+        playerState.innerHTML = 'You win!';
     } else {
-        // Display 'Loser!'
+        playerState.innerHTML = 'You lose!';
     }
 
     setVisibleState();
