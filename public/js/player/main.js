@@ -21,7 +21,7 @@ var player;
 
 // Socket
 
-var socket = io();
+var socket = io('/', { secure: true });
 
 // Listeners
 
