@@ -2,20 +2,34 @@ doctype html
 
 head
 	meta(name="viewport", content="width=device-width")
+	link(rel="stylesheet", href="//fonts.googleapis.com/css?family=Nunito:700")
+	link(rel="stylesheet", href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css")
+	link(rel="stylesheet", href="css/main.css")
+
 body
-	h1 Make it rain!
+	h1
+		span.span1 k
+		span.span2 u
+		span.span3 r
+		span.span4 v
+		span.span5 e
+		span.span6 s
 
-	h2#game
+	.client
+		.client__form
+			form#formPlayer
+				input#playerName(type="text")
 
-	h3#player
+		.client__button
+			button#readyButton Ready!
 
-	form#formPlayer
-		input#playerName(type="text")
-		input(type="submit")
+		.client__ready
+			span Ready?
 
-	button#readyButton Ready!
+		.client__orientation
+			i#deviceorientation.fa.fa-arrow-up.fa-5x
 
-	#deviceorientation
+		.client__done
 
 	script(src="js/bower_components/socket.io-client/socket.io.js")
 	script(src="js/player/main.js")

@@ -2,7 +2,7 @@
 
 function Game() {
     this.url = window.location.pathname.substr(1);
-    this.state = 'lobby';
+    this.state = 'lobby-ask-name';
 }
 
 function Player(id, color) {
@@ -14,10 +14,34 @@ function Player(id, color) {
     this.ready = false;
 }
 
+var visibleMap = {
+    'lobby-ask-name': '.client__form',
+    'lobby-ask-ready': '.client__button',
+    'lobby-ready': '.client__ready',
+    'playing': '.client__orientation',
+    'done': '.client__done'
+};
+
+function setVisibleState() {
+    if (!game) {
+        return;
+    }
+
+    var all = document.querySelector('.client').children;
+
+    [].forEach.call(all, function(container) {
+        container.style.display = 'none';
+    });
+
+    document.querySelector(visibleMap[game.state]).style.display = 'block';
+};
+
 // Fields
 
 var game = new Game();
 var player;
+
+setVisibleState();
 
 // Socket
 
@@ -25,22 +49,41 @@ var socket = io('/', { secure: true });
 
 // Listeners
 
+var input = document.getElementById('playerName');
+var playerState = document.querySelector('.client__ready span');
+
+input.addEventListener('change', function() {
+    var value = input.value.trim();
+
+    if (!/^[A-Za-z]+$/.test(value) || value.length > 10) {
+        input.dataset['invalid'] = true;
+        return;
+    }
+
+    input.dataset['invalid'] = false;
+});
+
 document.getElementById('formPlayer').addEventListener('submit', function(evt) {
     evt.preventDefault();
 
     var input = document.getElementById('playerName');
-
-    if (!/^[A-Za-z]+$/.test(input.value)) {
+    if (input.dataset['invalid'] === 'true') {
         return;
     }
 
-    player.name = input.value;
+    player.name = input.value.trim();
+
+    input.value = '';
+    input.blur();
 
     socket.emit('name player', {
         gameUrl: game.url,
         playerId: player.id,
         playerName: player.name
     });
+
+    game.state = 'lobby-ask-ready';
+    setVisibleState();
 });
 
 document.getElementById('readyButton').addEventListener('click', function(evt) {
@@ -50,6 +93,11 @@ document.getElementById('readyButton').addEventListener('click', function(evt) {
         gameUrl: game.url,
         playerId: player.id
     });
+
+    playerState.innerHTML = 'Awaiting other players...';
+
+    game.state = 'lobby-ready';
+    setVisibleState();
 });
 
 // Sockets
@@ -62,25 +110,32 @@ socket.on('connect', function() {
 
 socket.on('player confirmed', function(data) {
     player = new Player(data.playerId, data.playerColor);
-    var playerText = document.getElementById('player');
-    playerText.style.color = player.color;
-    playerText.innerHTML = 'What\'s your name?';
 });
 
 socket.on('start ready', function() {
+    playerState.innerHTML = 'Ready?';
 });
 
 socket.on('start game', function() {
     game.state = 'playing';
+    setVisibleState();
 });
 
 socket.on('end game', function(data) {
+    game.state = 'done';
+
     if (player.id === data.gameWinnerId) {
-        game.state = 'finished';
+        // Display 'Winner!'
+    } else {
+        // Display 'Loser!'
     }
+
+    setVisibleState();
 });
 
 // Device orientation stuff
+
+var arrow = document.getElementById('deviceorientation');
 
 if (window.DeviceOrientationEvent) {
     window.addEventListener('deviceorientation', function(evt) {
@@ -91,16 +146,18 @@ if (window.DeviceOrientationEvent) {
         var angle = Math.floor(evt.beta);
         var direction = null;
 
-        if (orientation < 0) {
+        if (player.orientation < 0) {
             angle *= -1;
         }
 
         if (angle < -20) {
             direction = 'left';
-        }
-
-        if (angle > 20) {
+            arrow.style.webkitTransform = 'rotate(-45deg)';
+        } else  if (angle > 20) {
             direction = 'right';
+            arrow.style.webkitTransform = 'rotate(45deg)';
+        } else {
+            arrow.style.webkitTransform = 'rotate(0)';
         }
 
         if (direction === player.direction) {
@@ -108,8 +165,6 @@ if (window.DeviceOrientationEvent) {
         }
 
         player.direction = direction;
-
-        document.getElementById('deviceorientation').innerHTML = player.direction;
 
         socket.emit('move player', {
             gameUrl: game.url,
@@ -119,6 +174,10 @@ if (window.DeviceOrientationEvent) {
     });
 
     window.addEventListener('orientationchange', function(evt) {
-        orientation = window.orientation;
+        if (!player) {
+            return;
+        }
+
+        player.orientation = window.orientation;
     });
 }
