@@ -5,7 +5,7 @@
             {{ player.name }} <span style="background: {{ player.color }};">{{ player.alive ? 'Alive' : 'Dead' }}</span>
         </li>
     </ul>
-    <button ng-click="restartGame()">Restart</button>
+    <button ng-click="restartGame()" ng-show="game.winner">Restart</button>
 </div>
 
 <div class="game__canvas">
