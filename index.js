@@ -28,10 +28,11 @@ app.set('view engine', 'jade');
 
 // Logic
 
-var Game = function(id) {
+var Game = function() {
 	this.players = {};
 	this.url = Math.random().toString(36).substr(2, 5);
 	this.socket = null;
+    this.playing = false;
 };
 
 var Player = function(id) {
@@ -39,7 +40,6 @@ var Player = function(id) {
 	this.socket = null;
 };
 
-var gameMap = {};
 var urlGameMap = {};
 
 // Routes
@@ -70,6 +70,10 @@ io.on('connection', function(socket) {
 		socket.emit('new game', {
 			url: game.url
 		});
+
+        socket.on('disconnect', function() {
+            delete urlGameMap[game.url];
+        });
 	});
 
 	socket.on('new player', function(data) {
