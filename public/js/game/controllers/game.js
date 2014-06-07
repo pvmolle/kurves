@@ -2,9 +2,10 @@
 
 angular.module('kurves')
     .controller('GameCtrl', function($scope, socket, Game, Player, $state, $timeout) {
+
         // Catch for incorrect routing
 
-        if (!$scope.game) {
+        if ($state.is('game.play') && !$scope.game) {
             $state.go('^.lobby');
         }
 
