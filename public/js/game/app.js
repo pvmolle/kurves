@@ -21,4 +21,7 @@ angular.module('kurves', ['ui.router'])
                 url: '/play',
                 templateUrl: 'templates/game.play.html'
             });
-	});
+	})
+    .run(function($state) {
+        $state.go('home');
+    });

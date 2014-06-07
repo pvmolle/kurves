@@ -1,11 +1,21 @@
 doctype html
 
 head
+	link(rel="stylesheet", href="css/main.css")
+
 body(ng-app="kurves")
 
-	h1 Kurves
+	.wrapper
+		h1
+			span.span1 k
+			span.span2 u
+			span.span3 r
+			span.span4 v
+			span.span5 e
+			span.span6 s
 
-	ui-view
+		.game
+			ui-view
 
 	script(src="js/bower_components/socket.io-client/socket.io.js")
 	//script(src="js/game/main.js")

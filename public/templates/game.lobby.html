@@ -1,9 +1,15 @@
-<h2>Lobby</h2>
+<h2>lobby</h2>
 
-<h3>Players</h3>
-<ul>
-    <li ng-repeat="(id, player) in game.players track by id">{{ player.name }} <span>{{ player.ready ? 'Ready' : 'Standby' }}</span></li>
-</ul>
+<div class="lobby__players">
+    <h3>players</h3>
+    <ul>
+        <li class="player" style="color: {{ player.color }};" ng-repeat="(id, player) in game.players track by id">
+            {{ player.name }} <span style="background: {{ player.color }};">{{ player.ready ? 'ready' : 'standby' }}</span>
+        </li>
+    </ul>
+</div>
 
-
-<button ng-click="startGame()" ng-disabled="!game.allPlayersReady()">Start!</button>
+<div class="lobby__buttons">
+    <div class="game__url">Navigate to <span>/{{ game.url }}</span> to join this game!</div>
+    <button class="lobby__button-start" ng-click="startGame()" ng-disabled="!game.allPlayersReady()">{{ game.allPlayersReady() ? 'start!' : 'wait...' }}</button>
+</div>

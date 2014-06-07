@@ -60,6 +60,14 @@ angular.module('kurves')
         socket.on('new game', function(data) {
             $scope.game = new Game($scope, data.url, 500, 500);
 
+            // Temporarily add two players for testing purposes
+
+            for (var i = 0; i < 2; i++) {
+                var player = new Player(i, $scope.game);
+                player.name = 'Player' + (i + 1);
+                player.ready = true;
+                $scope.game.players[player.id] = player;
+            }
             $scope.$apply();
         });
 

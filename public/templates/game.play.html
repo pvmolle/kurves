@@ -1,5 +1,13 @@
-<button ng-click="restartGame()"></button>
-<ul>
-    <li ng-repeat="(id, player) in game.players">{{ player.name }} <span>{{ player.alive ? 'Alive' : 'Dead' }}</span></li>
-</ul>
-<canvas id="the-canvas"></canvas>
+<div class="game__players">
+    <h3>players</h3>
+    <ul>
+        <li class="player" style="color: {{ player.color }};" ng-repeat="(id, player) in game.players">
+            {{ player.name }} <span style="background: {{ player.color }};">{{ player.alive ? 'Alive' : 'Dead' }}</span>
+        </li>
+    </ul>
+    <button ng-click="restartGame()">Restart</button>
+</div>
+
+<div class="game__canvas">
+    <canvas id="the-canvas"></canvas>
+</div>
