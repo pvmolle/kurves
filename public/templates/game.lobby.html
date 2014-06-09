@@ -1,4 +1,6 @@
 <div class="lobby">
+    <h2>new game</h2>
+
     <div class="lobby__buttons">
         <div class="game__url">Game url:<br/><span>kurves.herokuapp.com/{{ game.url }}</span><br/> Navigate to the game url to join this game!</div>
         <button class="lobby__button-start" ng-click="startGame()" ng-disabled="!game.allPlayersReady()">{{ game.allPlayersReady() ? 'start!' : 'wait...' }}</button>
