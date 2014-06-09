@@ -52,16 +52,16 @@ app.get('/:game', function(req, res) {
     var game = urlGameMap[req.params.game];
 
 	if (!urlGameMap[req.params.game]) {
-		return res.send('Game not found!');
+		return res.render('warning', { message: 'game not found!' });
 	}
 
     console.log('no. players:' +  Object.keys(game.players).length);
     if (Object.keys(game.players).length >= 6) {
-        return res.send('Game is full!');
+        return res.render('warning', { message: 'Game is full!' });
     }
 
     if (game.playing) {
-        return res.send('Game already started!');
+        return res.render('warning', { message: 'Game already started!' });
     }
 
 	res.render('player');

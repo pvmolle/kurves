@@ -16,20 +16,6 @@ body
 		span.span6 s
 
 	.client
-		.client__form
-			form#formPlayer
-				label(for="playerName").question what's your name?
-				input#playerName(type="text")
+		h2 #{message}
 
-		.client__button
-			span.question are you ready?
-			button#readyButton ready!
-
-		.client__state
-			span ready?
-
-		.client__orientation
-			i#deviceorientation.fa.fa-arrow-up.fa-5x
-
-	script(src="js/bower_components/socket.io-client/socket.io.js")
-	script(src="js/player/main.js")
+		p head over to<br/> kurves.herokuapp.com<br/> to create a new game
