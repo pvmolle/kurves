@@ -1,8 +1,13 @@
 "use strict";
 
 angular.module('kurves')
-    .factory('socket', function() {
-       var socket = io('/', { secure: true });
+    .factory('SocketFactory', function() {
+        var SocketFactory = {
+            getNewSocket: function() {
+                var socket = io('/', { secure: true, multiplex: false });
+                return socket;
+            }
+        }
 
-        return socket;
+        return SocketFactory;
     });

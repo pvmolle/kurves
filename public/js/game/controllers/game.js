@@ -1,13 +1,16 @@
 "use strict";
 
 angular.module('kurves')
-    .controller('GameCtrl', function($scope, socket, Game, Player, $state, $timeout) {
+    .controller('GameCtrl', function($scope, SocketFactory, Game, Player, $state, $timeout) {
 
         // Catch for incorrect routing
 
         if ($state.is('game.play') && !$scope.game) {
             $state.go('^.lobby');
         }
+
+        // Socket
+        var socket = SocketFactory.getNewSocket();
 
         // Listeners
 
