@@ -28,3 +28,21 @@ canvas {
   box-sizing: border-box;
   padding: 5px;
 }
+
+.nav {
+  text-align: center;
+  font-size: 34px;
+
+  li {
+    margin: 30px 0;
+  }
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+
+  &:hover, &:active {
+    color: #00fdff;
+  }
+}
