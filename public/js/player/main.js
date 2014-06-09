@@ -67,7 +67,7 @@ document.getElementById('formPlayer').addEventListener('submit', function(evt) {
     evt.preventDefault();
 
     var input = document.getElementById('playerName');
-    if (input.dataset['invalid'] === 'true') {
+    if (!input.dataset['invalid'] || input.dataset['invalid'] === 'true') {
         return;
     }
 
