@@ -94,7 +94,7 @@ document.getElementById('readyButton').addEventListener('click', function(evt) {
         playerId: player.id
     });
 
-    playerState.innerHTML = 'Awaiting other players...';
+    playerState.innerHTML = 'awaiting other players...';
 
     game.state = 'lobby-ready';
     setVisibleState();
@@ -114,7 +114,7 @@ socket.on('player confirmed', function(data) {
 
 socket.on('start ready', function() {
     game.state = 'lobby-ready';
-    playerState.innerHTML = 'Ready?';
+    playerState.innerHTML = 'ready?';
     setVisibleState();
 });
 
@@ -127,9 +127,9 @@ socket.on('end game', function(data) {
     game.state = 'done';
 
     if (player.id === data.gameWinnerId) {
-        playerState.innerHTML = 'You win!';
+        playerState.innerHTML = 'you win!';
     } else {
-        playerState.innerHTML = 'You lose!';
+        playerState.innerHTML = 'you lose!';
     }
 
     setVisibleState();

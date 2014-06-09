@@ -18,13 +18,15 @@ body
 	.client
 		.client__form
 			form#formPlayer
+				label(for="playerName").question what's your name?
 				input#playerName(type="text")
 
 		.client__button
-			button#readyButton Ready!
+			span.question are you ready?
+			button#readyButton ready!
 
 		.client__state
-			span Ready?
+			span ready?
 
 		.client__orientation
 			i#deviceorientation.fa.fa-arrow-up.fa-5x
