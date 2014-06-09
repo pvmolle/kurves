@@ -49,6 +49,11 @@ angular.module('kurves')
             var allPlayersReady = true;
 
             var playersList = Object.keys(this.players);
+
+            if (playersList.length < 2) {
+                return false;
+            }
+
             playersList.forEach(function(id) {
                 var p = self.players[id];
 
