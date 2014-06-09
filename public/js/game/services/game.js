@@ -21,7 +21,7 @@ angular.module('kurves')
         Game.prototype.reset = function() {
             var self = this;
 
-            this.state = 'playing';
+            this.state = 'lobby';
             this.rafId =  null;
             this.winner = null;
 
