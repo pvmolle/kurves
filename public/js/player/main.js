@@ -52,7 +52,7 @@ var socket = io('/', { secure: true });
 var input = document.getElementById('playerName');
 var playerState = document.querySelector('.client__state span');
 
-input.addEventListener('change', function() {
+input.addEventListener('keyup', function() {
     var value = input.value.trim();
 
     if (!/^[A-Za-z]+$/.test(value) || value.length > 10) {
