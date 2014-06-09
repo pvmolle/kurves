@@ -1,15 +1,19 @@
-<h2>lobby</h2>
+<div class="lobby">
+    <div class="lobby__buttons">
+        <div class="game__url">Game url:<br/><span>kurves.herokuapp.com/{{ game.url }}</span><br/> Navigate to the game url to join this game!</div>
+        <button class="lobby__button-start" ng-click="startGame()" ng-disabled="!game.allPlayersReady()">{{ game.allPlayersReady() ? 'start!' : 'wait...' }}</button>
+    </div>
 
-<div class="lobby__players">
-    <h3>players</h3>
-    <ul>
-        <li class="player" style="color: {{ player.color }};" ng-repeat="(id, player) in game.players track by id">
-            {{ player.name }} <span style="background: {{ player.color }};">{{ player.ready ? 'ready' : 'standby' }}</span>
-        </li>
-    </ul>
-</div>
-
-<div class="lobby__buttons">
-    <div class="game__url">Navigate to <span>/{{ game.url }}</span> to join this game!</div>
-    <button class="lobby__button-start" ng-click="startGame()" ng-disabled="!game.allPlayersReady()">{{ game.allPlayersReady() ? 'start!' : 'wait...' }}</button>
+    <div class="lobby__players">
+        <h3>connected players</h3>
+        <table>
+            <tbody ng-repeat="(id, player) in game.players track by id" >
+                <tr class="spacer"></tr>
+                <tr class="player">
+                    <td style="color: {{ player.color }};">{{ player.name }}</td>
+                    <td style="background: {{ player.color }};" class="player__status">{{ player.ready ? 'ready' : 'standby' }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

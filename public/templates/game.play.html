@@ -1,13 +1,22 @@
 <div class="game__players">
     <h3>players</h3>
-    <ul>
-        <li class="player" style="color: {{ player.color }};" ng-repeat="(id, player) in game.players">
-            {{ player.name }} <span style="background: {{ player.color }};">{{ player.alive ? 'Alive' : 'Dead' }}</span>
-        </li>
-    </ul>
-    <button ng-click="restartGame()" ng-show="game.winner">Restart</button>
+    <table>
+        <tbody ng-repeat="(id, player) in game.players track by id" >
+        <tr class="spacer"></tr>
+        <tr class="player">
+            <td style="color: {{ player.color }};">{{ player.name }}</td>
+            <td style="background: {{ player.color }};" class="player__status">{{ player.alive ? 'alive' : 'dead' }}</td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 
 <div class="game__canvas">
+    <div class="game__overlay" ng-show="game.state !== 'playing'">
+        <div ng-show="game.state === 'lobby'"><h3>ready?</h3></div>
+        <div ng-show="game.state === 'finished'"><h3>{{ game.winner.name }} wins!</h3>
+            <button class="small" ng-click="restartGame()" ng-show="game.winner">restart</button>
+        </div>
+    </div>
     <canvas id="the-canvas"></canvas>
 </div>

@@ -1,13 +1,33 @@
-.lobby__players {
-  width: 60%;
-  float: left;
-}
-
-.lobby__buttons {
-  width: 40%;
-  float: left;
+.lobby {
+  text-align: center;
 }
 
 .lobby__button-start {
   width: 140px;
+  margin: 20px 0;
+}
+
+.lobby__buttons {
+  margin: 20px 0;
+}
+
+.lobby__players {
+  margin: 20px 0;
+}
+
+.game__url {
+  line-height: 35px;
+}
+
+table {
+  margin: 0 auto;
+}
+
+.spacer {
+  height: 15px;
+}
+
+td {
+  width: 100px;
+  padding: 5px 0;
 }

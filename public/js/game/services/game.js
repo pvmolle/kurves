@@ -140,9 +140,9 @@ angular.module('kurves')
 
         Game.prototype.end = function(winner) {
             this.state = 'finished';
-            cancelAnimationFrame(this.rafId);
             this.winner = winner;
             $rootScope.$broadcast('finished');
+            cancelAnimationFrame(this.rafId);
         }
 
         return Game;
