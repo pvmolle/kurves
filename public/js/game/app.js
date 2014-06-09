@@ -20,6 +20,14 @@ angular.module('kurves', ['ui.router'])
             .state('game.play', {
                 url: '/play',
                 templateUrl: 'templates/game.play.html'
+            })
+            .state('instructions', {
+                url: '/how-to-play',
+                templateUrl: 'templates/instructions.html'
+            })
+            .state('about', {
+                url: '/about',
+                templateUrl: 'templates/about.html'
             });
 	})
     .run(function($state) {
