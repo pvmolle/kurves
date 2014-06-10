@@ -10,7 +10,31 @@ angular.module('kurves')
         }
 
         // Socket
+
         var socket = SocketFactory.getNewSocket();
+
+        // Events
+
+        var startX = 10;
+        var startY = 490;
+        $scope.addDemoPlayer = function() {
+            if (!$scope.game) {
+                return;
+            }
+
+            var player = new Player('demo' + startX, $scope.game);
+            player.x = startX;
+            player.y = startY;
+            player.angle = (-1) * Math.PI / 2;
+            player.alive = true;
+            player.name = 'Demo';
+            player.ready = true;
+
+            $scope.game.players['demo' + startX] = player;
+
+            startX +=10;
+            startY -= 10;
+        }
 
         // Listeners
 

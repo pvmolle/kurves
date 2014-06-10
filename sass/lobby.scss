@@ -31,3 +31,15 @@ td {
   width: 100px;
   padding: 5px 0;
 }
+
+.demo {
+  font-size: 16px;
+  color: #aaa;
+  background: transparent;
+  border: 3px solid #aaa;
+  margin-top: 20px;
+}
+
+.demo:hover, .demo:active {
+  background: transparent !important;
+}
