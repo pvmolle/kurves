@@ -22,6 +22,11 @@ angular.module('kurves')
                 return;
             }
 
+            var numPlayers = Object.keys($scope.game.players).length;
+            if (numPlayers >= 5) {
+                return;
+            }
+
             var player = new Player('demo' + startX, $scope.game);
             player.x = startX;
             player.y = startY;
